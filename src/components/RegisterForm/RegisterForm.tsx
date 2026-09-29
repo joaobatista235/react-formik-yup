@@ -4,7 +4,11 @@ import { registerSchema } from '../../schemas/registerSchema';
 import type { RegisterFormData } from '../../types/RegisterForm';
 import './RegisterForm.css';
 
-export function RegisterForm() {
+interface RegisterFormProps {
+    onSubmit?: (values: RegisterFormData) => Promise<void>;
+}
+
+export function RegisterForm({ onSubmit }: RegisterFormProps) {
     const initialValues: RegisterFormData = {
         name: '',
         email: '',
@@ -15,14 +19,10 @@ export function RegisterForm() {
     const formik = useFormik<RegisterFormData>({
         initialValues,
         validationSchema: registerSchema,
-        onSubmit: async (values, { setSubmitting }) => {
-            console.log('Enviando:', values);
-
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-
-            console.log('Cadastro realizado!');
-
-            setSubmitting(false);
+        onSubmit: async (values) => {
+            if (onSubmit) {
+                await onSubmit(values);
+            }
         },
     });
 
